@@ -1,18 +1,20 @@
 require('./otherFile.js');
 const obj = require('./calculate/sum.js'); // Importing the calculateSum function from sum.js
 
-const {x,calculateSum} = require('./calculate|index.js'); // Destructuring to get x and calculateSum directly from index.js
+const data = require('./data.json'); // Importing data from a JSON file
 
 const {calMul}= require('./calculate/multiply.js'); // Importing the calculateMultiply function from multiply.js
 
 var name = "Namaste Node.js";
 
+console.log(data);
+
 var a = 10;
 var b = 20;
 console.log(obj.x); // Accessing the exported variable x from sum.js
-calculateSum(a, b); // This will not work unless calculateSum is exported from sum.js
+obj.calculateSum(a, b); // This will not work unless calculateSum is exported from sum.js
 
-calculateSum(a,b); // Using the calculateSum function directly
+obj.calculateSum(a,b); // Using the calculateSum function directly
 calMul(a,b);
 console.log("This is app.js");
 
