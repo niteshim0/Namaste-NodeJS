@@ -245,3 +245,6 @@ fs.readFile("file.txt", "utf-8", callback);
 
 - Without libuv, Node.js wouldn’t be able to do **non-blocking I/O** efficiently.
 - It’s what allows **one thread** to handle **thousands of concurrent connections**.
+
+![Libuv Role](libuv.png)
+
