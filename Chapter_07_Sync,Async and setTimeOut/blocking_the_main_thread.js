@@ -17,7 +17,7 @@ fs.readFileSync("./file.txt", (err, data) => {
 
 
 // another blocking call
-crypto.pbkdf2Sync("password", "salt", 1000000000, 64, "sha512");
+crypto.pbkdf2Sync("password", "salt", 1000000, 64, "sha512");
 
 console.log("Key generated synchronously");
 
