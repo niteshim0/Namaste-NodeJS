@@ -67,5 +67,4 @@ flowchart TD
     H --> I{Optimization Fails?}
     I -->|Yes| C
     I -->|No| H
-
 ```
