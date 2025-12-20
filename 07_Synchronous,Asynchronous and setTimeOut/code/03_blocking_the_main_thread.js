@@ -11,12 +11,16 @@ fs.readFileSync("./file.txt", (err, data) => {
   }
   console.log("File content:", data.toString());
 });
+// since readFileSync is a synchronous method , so JS enine will wait here till its completion
 // this is a blocking call 
 // code execution will pause here until the file is read completely
 // after the file is read, the next line of code will be executed
+// this blocking call can lead to performance issues in a real-world application
+// it also does get offloaded to the libuv(because JS engine doesn't possess any file system interaction capacity and libuv does) but JS engine will wait for its completion before moving to the next line of code
 
 
 // another blocking call
+//  Password-Based Key Derivation Function 2
 crypto.pbkdf2Sync("password", "salt", 1000000, 64, "sha512");
 
 console.log("Key generated synchronously");

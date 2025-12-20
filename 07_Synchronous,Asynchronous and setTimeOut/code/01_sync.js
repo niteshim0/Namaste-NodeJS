@@ -16,4 +16,4 @@ console.log("Multiply result is : " + c);
 // These are synchronous operations
 // nothing gets offloads to libuv library
 // all things happen in a single thread by V8 JS Engine
-// 
+// code gets executed line by line
