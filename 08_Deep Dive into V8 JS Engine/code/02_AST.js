@@ -3,3 +3,5 @@ function generateAST() {
     return a + b;
   }
 }
+
+// use website astexplorer.net for generation of AST
