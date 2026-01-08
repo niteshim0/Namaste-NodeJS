@@ -1,4 +1,5 @@
 // Server creation using express web framework
+// starting routing :: https://expressjs.com/en/guide/routing.html
 const express = require("express");
 
 const app = express();
