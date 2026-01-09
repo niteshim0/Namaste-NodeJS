@@ -149,6 +149,37 @@ app.use('/users',
   }]
 )
 
+// Case VII : Even at nth Level, no any response sent back but control gets transferred
+// It thinks next() is supposed to get,post(respective http Methods) , if get -> cannot GET /users error , if post Cannot POST /users
+app.use('/users',
+  (req,res,next)=>{
+  console.log("Route Handler 1");
+  next();
+  },
+  (req,res,next)=>{
+    console.log('Route Handler 2');
+    next();
+  },
+  (req,res,next)=>{
+  console.log("Route Handler 3");
+  next();
+  },
+  (req,res,next)=>{
+    console.log('Route Handler 4');
+    next();
+  },
+  [
+  (req,res,next)=>{
+  console.log("Route Handler 5");
+  next();
+  },
+  (req,res,next)=>{
+    console.log('Route Handler 6');
+    // No response even from last level but control gets transferred
+    next();
+  }]
+)
+
 app.listen(3000,()=>{
   console.log('Server is listening at port 3000');
 })
