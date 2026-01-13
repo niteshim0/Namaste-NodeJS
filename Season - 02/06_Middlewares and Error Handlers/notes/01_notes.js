@@ -47,5 +47,5 @@ return res.json(...)
 // Mental Model
 If no route handler exists, the server cannot map the request to any logic, so it either:
 ---> Responds with 404
----> Or never responds → client timeout
+---> Or never responds → client timeout   
 */

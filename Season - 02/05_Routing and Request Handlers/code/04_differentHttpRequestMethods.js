@@ -2,7 +2,7 @@ const express = require('express');
 
 const app = express();
 
-// . You can also use app.all() to handle all HTTP methods and app.use() to specify middleware as the callback function 
+// You can also use app.all() to handle all HTTP methods and app.use() to specify middleware as the callback function 
 
 //The GET method requests a representation of the specified resource. Requests using GET should only retrieve data and should not contain a request content.
 app.get('/', (req, res) => {
