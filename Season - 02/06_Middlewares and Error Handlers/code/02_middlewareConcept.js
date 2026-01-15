@@ -1,4 +1,3 @@
-// 
 
 // no mattar what this middleware applied to this app , so any api endpoint you hit I will run
 app.use((req, res, next) => {
@@ -38,9 +37,10 @@ app.delete("/admin/deleteUsers",(req,res,next)=>{
 }
 );  
 
-// We are authorizing the admin again and again for every admin route which is against the very principle of DRY (so thats middleware comes into the action(it is basically a function,definded once,used multiple times))   
+// We are authorizing the admin again and again for every admin route which is against the very principle of DRY (so thats middleware comes into the action(it is basically a function,definded once,used multiple times))   (Code Reusability)
 // Case II :: Code with using middlewares
 
+// this middleware executes for every routeHandler which contains "/admin" in its req.url
 app.use("/admin",(req,res,next)=>{
     const token = "abc";
   const isTokenAuthorized = token === "abc";
@@ -87,6 +87,7 @@ app.delete("/admin/deleteUsers",(req,res,next)=>{
 ); 
 
 // Other way of using middleware at route level
+// same of execution as previous one
 app.get('/users',userAuth,(req,res,next)=>{
   console.log("First app.get of routeHandler1");
   next();
@@ -96,7 +97,7 @@ app.get('/users',userAuth,(req,res,next)=>{
   res.send("Now routeHandler ends in route2")
  })
 
-// --------------Error Handling ---------------------
+
 
 
 

@@ -183,6 +183,7 @@ app.use('/users',
 )
 
 // Case VIII :: Different app.get for same api endpoint
+// behaves in same way as VI , means every callback with same route Hanlder will execute one after the other as it was supposed to be , if you do next() , it will move to next
  app.get('/user',(req,res,next)=>{
   console.log("First app.get of routeHandler1");
   next();

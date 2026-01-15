@@ -27,26 +27,26 @@ async function main() {
 
   // Create Operations
 
-  const insertManyDocs = await collection.insertMany([
-  {
-  "firstName": "Nitesh",
-  "lastName": "Kushwaha",
-  "city": "Salempur",
-  "phoneNo": "9876543210"
-  },
-  {
-  "firstName": "Mithilesh",
-  "lastName": "Kushwaha",
-  "city": "Tundla",
-  "phoneNo": "9876543210"
-  },
-  {
-  "firstName": "Chandan",
-  "lastName": "Kushwaha",
-  "city": "Gujarat",
-  "phoneNo": "9876543210"
-  }
-  ]);
+  // const insertManyDocs = await collection.insertMany([
+  // {
+  // "firstName": "Nitesh",
+  // "lastName": "Kushwaha",
+  // "city": "Salempur",
+  // "phoneNo": "9876543210"
+  // },
+  // {
+  // "firstName": "Mithilesh",
+  // "lastName": "Kushwaha",
+  // "city": "Tundla",
+  // "phoneNo": "9876543210"
+  // },
+  // {
+  // "firstName": "Chandan",
+  // "lastName": "Kushwaha",
+  // "city": "Gujarat",
+  // "phoneNo": "9876543210"
+  // }
+  // ]);
 
   const data = {
   firstName: "Bhoot",
@@ -56,14 +56,14 @@ async function main() {
   }
 
 
-  const insertData = await collection.insertOne(data);
-  console.log(insertData);
+  // const insertData = await collection.insertOne(data);
+  // console.log(insertData);
 
 
-  Update
-  const updateResult = await collection.updateMany({city : "KaaliRaatein"},{$set : {city : "Darna Zaroori Hai"}});
-  return 'done';
-  console.log("Updated Docs=>",updateResult);
+  // Update
+  // const updateResult = await collection.updateMany({city : "KaaliRaatein"},{$set : {city : "Darna Zaroori Hai"}});
+  // return 'done';
+  // console.log("Updated Docs=>",updateResult);
   
   // Delete
   const deleteResult = await collection.deleteMany({city : "Darna Zaroori Hai"});

@@ -1,6 +1,6 @@
 // Case I :: Express handles error by default
 app.get('/users',(err,req,res,next)=>{
-    // many things inside the server will be xposed to the clients if server will not handle the error gracefully // use try catch
+    // many things inside the server will be exposed to the clients if server will not handle the error gracefully // use try catch
     throw new Error("An Error instance is created");
     next(err); // provided by defualt from express.js
  });
@@ -10,7 +10,7 @@ app.get('/users',(err,req,res,next)=>{
 // Two arguments it assumes -> req,res
 // Three arguments it assumes -> req,res,next
 // Four arguments it assumes -> err,req,res,next
-// Even their order can't be changed , if you do then err might become next , next-> req , res->err and so on and so forth.
+// Even their order can't be changed , if you do then err might become next , next-> req , res->err and so on and so forth.(it can messs up your head big time , Remember Express.js is a framework on top of nodejs http module, so you have to play by the rules of express.js)
 
 app.get('/users',(req,res)=>{
     try{
