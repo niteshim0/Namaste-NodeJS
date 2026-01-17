@@ -5,6 +5,15 @@ const { connectDB } = require('../config/database');
 const {User} = require('../models/user');
 
 app.post('/signup', async(req,res)=>{
+  
+  // actually this user in real production app we will take from the form the user submittted , there will not be any hardcoded data
+  // password will be hashed using bcrypt and during login jwt session token and id will do
+  // Media files are not stored directly in MongoDB because large files
+ // can degrade query performance and increase database load.
+ // Instead, we store only the URL of the media file.
+ // Services like Cloudinary are used to host and manage media assets.
+
+  
   const dummyUser = {
   name: "Madhav Verma",
   email: "Madhav.dev@example.com",
@@ -59,7 +68,8 @@ try{
 } catch(err){
   return res.status(400).send("User is not added , there is a problem of :->", err.message);
 }
-})
+}
+)
 
 connectDB()
 .then(()=>{

@@ -14,7 +14,7 @@ iv) Mongoose is an ODM that provides schema-based modeling, validation, middlewa
 
 👉 ODM = Object Data Modeling
 
-          ----> MongoDB → documents (JSON-like called BSON)
+          ----> MongoDB → documents (JSON-like documents called BSON document)
           ----> Mongoose → maps those documents to JavaScript objects
 
 
@@ -61,6 +61,8 @@ const userSchema = new mongoose.Schema({
    ---> users → collection (auto pluralized)(it is saved as users in MongoDB)
 */
 const User = mongoose.model("User", userSchema);
+
+module.exports = {User};
 
 
 /*
