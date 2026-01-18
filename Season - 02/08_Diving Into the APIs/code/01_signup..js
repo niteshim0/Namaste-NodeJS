@@ -6,6 +6,13 @@ const {User} = require('../models/user');
 
 app.use(express.json()) // middleware to convert JSON(text-format) -> JS Object(native data structure)(operations or function can be performed on data structure not on certain text format)
 
+
+
+
+
+
+/* ----------------------------------------------------------------- */
+// signup api
 app.post('/signup', async(req,res)=>{
   
 try{
@@ -28,6 +35,9 @@ try{
   return res.status(400).send("User is not added , there is a problem of :->", err.message);
 }
 })
+
+/*------------------------------------------------------------------- */
+
 
 connectDB()
 .then(()=>{
