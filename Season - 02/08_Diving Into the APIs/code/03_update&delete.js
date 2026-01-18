@@ -67,7 +67,49 @@ app.get('/feed',async (req,res) =>{
 })
 /* ------------------------------------------------------------- */
 
+/*--------------------Delete-------------------------------------- */
 
+app.delete('/user', async (req,res) => {
+
+  console.log(req.body.userId);
+  try {
+    const userId = req.body.userId;
+    const user = await User.findByIdAndDelete(userId);
+    
+    // user will contain deleted document(if found) , otherwise null
+
+    if(!user){
+      return res.status(404).json({"User Not Found"});
+    }
+      
+
+  } catch (error) {
+    console.log("Something Went Wrong", error);
+  }
+})
+
+/*---------------------------------------------------------------- */
+
+
+/* ------------------Update--------------------------------------- */
+
+app.patch('/user', async (req,res) => {
+  console.log(req.body);
+  try{
+     const data = req?.body;
+     const userId = req?.body?.userId;
+    //  const user = await User.findByIdAndUpdate(userId,data,
+    //   {returnDocument: "before"}); // before update version of user
+    //  console.log(user);
+     const user = await User.findByIdAndUpdate(userId,data,
+      {returnDocument: "after"}); // after update version of user
+     res.status(200).send("User updated successfully after version" ,user);
+  }catch{
+    res.status(400).send("Something went wrong!");
+  }
+})
+
+/*------------------------------------------------------------------- */
 connectDB()
 .then(()=>{
   console.log("Database connection established");

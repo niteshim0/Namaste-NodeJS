@@ -59,8 +59,20 @@ const userSchema = new mongoose.Schema({
    A model is a wrapper around the schema and represents a MongoDB collection.
    ---> User → model (mongoose)
    ---> users → collection (auto pluralized)(it is saved as users in MongoDB)
+
+   A Model is a class that's your primary tool for interacting with MongoDB. An instance of a Model(Object) is called a Document.
+
+   In Mongoose, the term "Model" refers to subclasses of the mongoose.Model class. You should not use the mongoose.Model(it's class) class directly. 
+   // see below
 */
 const User = mongoose.model("User", userSchema);
+/*
+Q. What does mongoose.model() is doing ?
+A. It is a function which performs following tasks :-
+    i)Registers a model with Mongoose.
+    ii)Compiles a Schema → Model.
+    iii)Returns a Model(that is User here) class.
+*/
 
 module.exports = {User};
 
