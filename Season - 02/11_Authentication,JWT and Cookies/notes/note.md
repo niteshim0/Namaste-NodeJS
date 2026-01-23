@@ -121,7 +121,7 @@ Authorization: Bearer <token>
 ## Stateless Authentication
 
 - The server does **not store session data**
-- Every request carries its own proof of authentication
+- Every request carries its own proof of authentication(jwt tokens)
 - Enables easier horizontal scaling
 
 ---
@@ -187,6 +187,34 @@ jwt.verify(token, process.env.JWT_SECRET);
 
 ---
 
+## Cookies
+
+Cookies are **small pieces of data** that a server stores in the **user’s browser** and sends back with every request to the same server.
+
+Think of a cookie as a **sticky note** 🍪 the website gives your browser so it can remember you.
+
+---
+
+## Why Cookies Are Used
+
+Cookies help websites to:
+- Remember login sessions
+- Store JWT tokens
+- Save user preferences (theme, language)
+- Track sessions and analytics
+
+---
+
+## How Cookies Work
+
+1. Client sends a request to the server
+2. Server sends a response with `Set-Cookie`
+3. Browser stores the cookie
+4. Browser automatically sends the cookie with future requests
+
+### Example HTTP Header
+  ```Set-Cookie: token=abc123; HttpOnly; Secure```
+
 ## Types of Cookies
 
 ### 1. Session Cookies
@@ -233,6 +261,25 @@ res.cookie("token", jwtToken, {
   sameSite: "strict"
 });
 ```
+The browser stores the cookie automatically.
+
+## Cookies with JWT (Best Practices)
+
+- Store JWT in HTTP-only cookies
+- Browser sends the token automatically
+- Server reads the token from cookies
+
+```js
+const token = req.cookies.token;
+```
+
+## Real-World Analogy
+
+Cookie = movie ticket or University ID card
+Browser = your pocket
+Server = theatre or University 
+
+You show the ticket or ID card each time you enter — no need to explain who you are again. (Remember College Days!Fucking Nightmare.)
 
 # Session
 
@@ -262,9 +309,7 @@ Sessions help servers:
 6. Server uses the session ID to retrieve session data
 
 ### Example HTTP Header
-Set-Cookie: connect.sid=s%3Aabc123; HttpOnly
-
-
+```Set-Cookie: connect.sid=s%3Aabc123; HttpOnly```
 
 ---
 
@@ -344,4 +389,104 @@ app.post("/login", (req, res) => {
 - **Session ID** = room key card  
 
 The hotel keeps your details securely, and the key card only points to your room.
+
+---
+
+# Mongoose Schema Methods
+
+**Schema methods** in Mongoose are **custom functions defined on a schema** that are available on **individual document instances**.
+
+They are mainly used to define **behavior related to a single document**.
+
+---
+
+## Why Use Schema Methods?
+
+- Encapsulate business logic inside the model
+- Keep controllers clean
+- Reuse logic across the app
+- Work directly with document data (`this`)
+
+---
+
+## How Schema Methods Work
+
+- Defined using `schema.methods`
+- Accessible on a **document**, not on the Model itself
+- Use `this` to refer to the current document
+
+---
+
+## Syntax
+
+```js
+schema.methods.methodName = function () {
+  // logic here
+  // here it should be always a proper function(a function which have context) (not an arrow function())
+  // here we will use 'this' variable(i.e.why proper fxn) which points to document
+};
+```
+## Example User Schema Method
+
+```js
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String
+});
+
+userSchema.methods.getPublicProfile = function () {
+  return {
+    id: this._id,
+    name: this.name,
+    email: this.email
+  };
+};
+
+const User = mongoose.model("User", userSchema);
+```
+
+## Using a Schema Method
+
+```js
+const user = await User.findById(id);
+const profile = user.getPublicProfile();
+```
+
+## Real-World Use Cases
+
+- Password comparison
+- Token generation
+- Formatting user data
+- Checking permissions
+
+### Example : Password Compare
+
+```js
+userSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+```
+## Schema Methods vs Static Methods
+
+| Feature       | Schema Methods      | Static Methods           |
+|---------------|------------------|------------------------|
+| Called on     | Document           | Model                  |
+| Access `this` | Yes (document)     | No (model)             |
+| Use case      | Document behavior  | Collection-level logic |
+
+---
+
+## When to Use Schema Methods
+
+Use schema methods when:
+
+- Logic depends on **one document**(e.g. password comparison)
+- You need access to **document fields**(e.g. getting profile picture)
+- You want **clean, reusable model logic**(offloading whole logic of some functions to models rather than controllers)
+
+
+
 
