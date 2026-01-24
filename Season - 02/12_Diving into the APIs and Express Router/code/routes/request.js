@@ -6,7 +6,7 @@ requestRouter.post('/sendConnectionRequest',userAuth,async(req,res)=>{
   try {
     const user = req.user;
     return res.status(200).json({
-      success : "true",
+      success : true,
       message : `I ${user.name} is sending connection request to someone which is present in my feed.`,
     })
   } catch (error) {
