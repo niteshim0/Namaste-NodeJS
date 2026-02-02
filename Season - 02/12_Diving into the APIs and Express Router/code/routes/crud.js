@@ -23,6 +23,7 @@ crudRouter.get('/feed',async (req,res) =>{
 
   try {
     const users = await User.find(); // no any filtering condition everyone qualifies so gives all the documents in User collection
+    // we will paginate it later on
     if(!users){
       res.status(404).send("Users Not Found");
     }
@@ -35,7 +36,9 @@ crudRouter.get('/feed',async (req,res) =>{
 crudRouter.delete('/user', async (req,res) => {
 
   try {
-     console.log(req.body.userId);
+    // since user should be logged in , if he wants to delete himself
+    // otherwise he can be deleted by admin   
+    // we will give admin authorization later on
     const userId = req.body.userId;
     const user = await User.findByIdAndDelete(userId);
     
@@ -61,7 +64,7 @@ crudRouter.delete('/user', async (req,res) => {
   }
 })
 
-
+// updating some value , sending the userId in params
 crudRouter.patch('/user/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;

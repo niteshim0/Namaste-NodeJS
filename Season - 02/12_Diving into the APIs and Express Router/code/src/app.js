@@ -10,7 +10,7 @@ const requestRouter = require('../routes/request');
 
 
 app.use(express.json()) // middleware to convert JSON(text-format) -> JS Object(native data structure)(operations or function can be performed on data structure not on certain text format)
-app.use(cookieParser())
+app.use(cookieParser()) // parsing the cookies
 
 // middlewares to offloads the path to routes
 // even its very dangerous way because every router will run for "/"
