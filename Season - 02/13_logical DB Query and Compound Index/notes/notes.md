@@ -332,3 +332,381 @@ error.errors.name.reason.message
 - reason exists only if validator throws.
 - {VALUE} is replaced with invalid value.
 - kind helps identify which validator failed.
+
+<hr>
+
+## Global SchemaType Validation (Mongoose)
+
+### Overview
+Global SchemaType validation allows you to define a validator that runs on **every instance of a specific SchemaType** (e.g., `String`, `Number`) across all schemas in a Mongoose application.
+
+---
+
+### Purpose
+- Enforce **consistent validation rules** globally
+- Avoid repeating validators on individual fields
+- Prevent common data issues (e.g., empty strings)
+
+---
+
+### Syntax
+```js
+mongoose.Schema.Types.<Type>.set('validate', validatorFn);
+```
+
+### Example :: Disallow Empty Strings Globally
+
+```js
+mongoose.Schema.Types.String.set('validate', {
+  validator: v => v == null || v.length > 0,
+  message: 'String cannot be empty'
+});
+// Validation Behavior
+// null / undefined → ✅ allowed
+// '' (empty string) → ❌ invalid
+// 'text' → ✅ valid
+```
+
+### Schema Example
+
+```js
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String
+});
+
+const User = mongoose.model('User', userSchema);
+```
+
+### Validation Result
+
+```js
+const user = new User({ name: '', email: '' });
+await user.validate();
+
+// Errors:
+// err.errors.name → ValidatorError
+// err.errors.email → ValidatorError
+```
+
+### Key Points
+
+- Applies to all schemas using that SchemaType.
+- Runs during .save() and .validate()
+- Works with required, minlength, etc.
+- Must be set before model creation.
+
+### Advantages
+
+| Benefit | Description |
+|------|------------|
+| Centralized validation logic | Validation rules are defined once and applied everywhere |
+| Cleaner schema definitions | Reduces repetitive validators in individual schemas |
+| Consistent data integrity | Ensures uniform validation across the entire application |
+
+---
+
+### Limitations
+
+| Limitation | Description |
+|--------|------------|
+| Cannot selectively disable per field | Global validators apply to all fields of that type |
+| Affects the entire application | Any change impacts all schemas |
+| Overuse may reduce flexibility | Too many global rules can limit schema customization |
+
+---
+
+### Best Practices
+
+- Use only for **core, universal rules**
+- Always provide **meaningful error messages**
+- Document global validators clearly for the team
+
+---
+
+### Common Use Cases
+
+- Prevent empty strings
+- Enforce trimmed strings
+- Apply global numeric constraints
+- Define default validation rules
+
+<hr>
+
+## Update Validators and this
+
+### 1. What are Update Validators?
+
+Mongoose supports validation on:
+- update()
+- updateOne()
+- updateMany()
+- findOneAndUpdate()
+
+❌ Validators are OFF by default for update queries.
+
+`Reason`: performance + partial document updates
+
+### 2. Enabling Update Validators
+
+To enable validation during updates:
+```js
+{ runValidators: true }
+```
+
+#### Example:
+
+```js
+await Toy.updateOne(
+  {},
+  { color: 'not-a-color' },
+  { runValidators: true }
+);
+// ➡️ Throws validation error if schema rules fail.
+```
+
+
+
+### 3. Important Behavior
+
+- Validators run only on `updated fields`.
+- Entire document is NOT validated.
+- Different from `.save()`, which validates the full document.
+
+### 4. Required Validator Caveat
+
+`required: true`
+- ❌ Not triggered unless the field is included in the update.
+- Can lead to invalid documents.
+
+#### Example:
+```js
+await User.updateOne(
+  { _id },
+  { age: 16 },
+  { runValidators: true }
+);
+// Works even if required fields are missing
+```
+
+### 5. $set vs Replacement Update
+
+- ❌ Replacement update (dangerous):
+```js
+await User.updateOne({ _id }, { age: 25 });
+```
+
+- ✔ Recommended:
+```js
+await User.updateOne(
+  { _id },
+  { $set: { age: 25 } },
+  { runValidators: true }
+);
+```
+
+### 6. findOneAndUpdate() Best Practices
+
+- Always use:
+```js
+{
+  runValidators: true,
+  new: true
+}
+
+// runValidators → enables validation
+// new: true → returns updated document
+```
+
+### 7. Enum vs Custom Validator
+
+- ✔ Preferred:
+```js
+color: {
+  type: String,
+  enum: ['red', 'green', 'blue']
+}
+```
+
+- ❌ Regex/custom validator:
+   - More error-prone
+   - Harder to maintain
+
+### 8. Custom Validator `this` Trap
+
+- In update validators:
+`this === query object ❌`
+- Cross-field validation will fail.
+- No access to full document.
+- ✔ Use .save() for cross-field checks.
+
+### 9. Middleware Behavior
+
+- save middleware ❌ does NOT run on updates.
+- updateOne, findOneAndUpdate → query middleware runs.
+
+### 10. .save() vs .updateOne()
+
+- Use `.save()` when:
+   - Single document
+   - Data integrity is critical
+   - Cross-field validation required
+   - Hooks must run
+
+- Use `.updateOne()` when:
+      - Partial update
+      - Bulk operations
+      - Performance matters
+
+### 11. Real-World Production Bug
+
+- Required fields not validated
+- Partial updates create invalid data
+- Common cause of silent DB corruption
+
+✔ Fix:
+```js
+const doc = await Model.findById(id);
+doc.set(data);
+await doc.save();
+```
+
+### 12. When `NOT` to Use Update Validators
+
+- Avoid when:
+    - Business rules span multiple fields.
+    - Required fields must always exist.
+    - Strong consistency is needed.
+
+### 13. Recommended Safe Update Pattern
+
+```js
+async function safeUpdate(id, data) {
+  const doc = await Model.findById(id);
+  if (!doc) throw new Error('Not found');
+
+  Object.assign(doc, data);
+  await doc.save();
+}
+```
+
+### 14. Key Takeaways (Must Remember)
+
+- Update validators are OFF by default.
+- Use { runValidators: true }.
+- Only updated fields are validated.
+- `$set` is safer than replacement.
+- `.save()` gives full validation.
+- Critical data → avoid update queries.
+
+
+### 15. Update Validators Only Run for Certain Operators
+
+Update validators in Mongoose **do NOT run for all update operators**.  
+They are applied **only** for the following operators:
+
+- `$set`
+- `$unset`
+- `$push`
+- `$addToSet`
+- `$pull`
+- `$pullAll`
+
+⚠️ Any operator **not in this list** is ignored by update validators.
+
+---
+
+## 16. Validators Do NOT Run for `$inc`
+
+Example schema:
+```js
+const testSchema = new Schema({
+  number: { type: Number, max: 0 }
+});
+```
+
+Update:
+```js
+await Test.updateOne(
+  {},
+  { $inc: { number: 1 } },
+  { runValidators: true }
+);
+// ❌ No validation error.
+// ✔ $inc bypasses validators completely.
+// Even though number exceeds max: 0, the update succeeds.
+```
+
+### 17. Array Validation Limitation
+
+- For array operators:
+     - `$push`
+     - `$addToSet`
+     - `$pull`
+     - `$pullAll`
+
+- 👉 Validators run only on individual array elements,
+- ❌ NOT on the array as a whole.
+
+### 18. Array Length Validators Are Ignored
+
+Schema:
+```js
+const testSchema = new Schema({
+  arr: [{ message: { type: String, maxlength: 10 } }]
+});
+
+// Array-level validator
+testSchema.path('arr').validate(function (v) {
+  return v.length < 2;
+});
+
+
+// Update:
+
+await Test.updateOne(
+  {},
+  { $push: [{ message: 'hello' }, { message: 'world' }] },
+  { runValidators: true }
+);
+
+
+// ❌ No validation error
+// ✔ Even though array length becomes ≥ 2.
+// Why?
+// Mongoose validates each pushed element.
+// It does NOT validate the array itself.
+// Q. What DOES Get Validated in Arrays ? 
+// ✔ This fails:
+// { message: 'this message is too long' }
+// ❌ This does NOT fail:
+// array length constraint.
+```
+### 20. Summary of Operator Behavior
+
+| Operator    | Validators Run? |
+| ----------- | --------------- |
+| `$set`      | ✅ Yes           |
+| `$unset`    | ✅ Yes           |
+| `$push`     | ✅ Elements only |
+| `$addToSet` | ✅ Elements only |
+| `$pull`     | ✅ Elements only |
+| `$pullAll`  | ✅ Elements only |
+| `$inc`      | ❌ No            |
+| `$mul`      | ❌ No            |
+| `$rename`   | ❌ No            |
+
+
+### 21. Practical Implication (Very Important)
+
+- Numeric constraints `(min, max)` can be bypassed via `$inc`.
+- Array `size constraints` are unsafe in update queries.
+
+**Schema-level array validation ≠ update-time safety.**
+
+
+
+
+
+
+
